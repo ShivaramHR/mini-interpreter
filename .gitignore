@@ -205,6 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+<<<<<<< HEAD
 
 # macOS
 .DS_Store
@@ -213,3 +214,5 @@ __marimo__/
 # IDE
 .idea/
 mini_interpreter/.gitignore
+=======
+>>>>>>> 5b784eb2453dac3b9784f060f7447061e8418a57

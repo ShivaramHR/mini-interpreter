@@ -36,4 +36,4 @@ print "done"
 
 ## Run
 
-python main.py program.my
+python main.py nameOfTheProgram
