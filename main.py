@@ -158,7 +158,7 @@ while index < len(lines):
             if lines[i].strip() == 'end':
                 endIndex = i
                 break
-        block = lines[index+1:endIndex]
+        block = [line.strip() for line in lines[index+1:endIndex]]
         for _ in range(value):
             for blockLine in block:
                 exec(blockLine.strip().split())
