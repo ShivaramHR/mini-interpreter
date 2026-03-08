@@ -28,7 +28,10 @@ def printEval(tokens):
             tokens[1] = tokens[1].strip().strip('""')  # Remove any leading/trailing whitespace
             print(tokens[1])
         elif tokens[1] in varValues :
-            print(varValues[tokens[1]])
+            if isinstance(varValues[tokens[1]], float) and varValues[tokens[1]].is_integer():
+                print(int(varValues[tokens[1]]))
+            else:
+                print(varValues[tokens[1]])
             return
         elif tokens[1] in stacksVarValues:
             print(stacksVarValues[tokens[1]])
@@ -113,22 +116,9 @@ stackOperations = {
     'pop': stackPop,
     'del': stackDel
 }
-
-def forEval(tokens):
-    var = tokens[0]
-    if var in varValues:
-        value = varValues[var]
-        if isinstance(value, float) and value.is_integer():
-            value = int(value)
-            for i in range(value):
-                print(value)
-        elif isinstance(value, str):
-            for char in value:
-                print(char)
             
-def exec():
+def exec(tokens):
     if tokens[0] == 'print':
-        print(tokens)
         printEval(tokens)
     elif tokens[0] == 'math':
         tokensCpy = tokens[1:]
@@ -143,15 +133,41 @@ def exec():
             stackOperations[tokens[1]](tokens[2], int(tokens[3]) if len(tokens) > 3 else None)
         else:       
             stacksVarEval(tokens[1:])
-    elif tokens[0] == 'for':
-        print(tokens)
-        forEval(tokens[1:])
-    elif tokens[0] == 'end':
-        quit()
-
+    # elif tokens[0] == 'for':
+    #     forEval(tokens[1:])
         
 with open(sys.argv[1], 'r') as file:
-    for line in file:
-        tokens = [token.strip() for token in line.strip('\n').split() if token.strip() != '']
-        if tokens:  # Check if the line is not empty
-            exec()
+    lines = file.readlines()
+
+index = 0
+
+while index < len(lines):
+    line = lines[index].strip()
+    tokens = line.split()
+    if not tokens:
+        index += 1
+        continue
+
+    if tokens[0] == "for":
+        var = tokens[1]
+        if var not in varValues:
+            print(f"Variable {var} not found")
+            break
+        value = int(varValues[var])
+        for i in range(index+1, len(lines)):
+            if lines[i].strip() == 'end':
+                endIndex = i
+                break
+        block = lines[index+1:endIndex]
+        for _ in range(value):
+            for blockLine in block:
+                exec(blockLine.strip().split())
+        
+        index = endIndex
+
+    else:
+        exec(tokens)
+
+    index += 1
+
+        
