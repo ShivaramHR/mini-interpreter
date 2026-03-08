@@ -120,9 +120,11 @@ def forEval(tokens):
         value = varValues[var]
         if isinstance(value, float) and value.is_integer():
             value = int(value)
-        for i in range(value):
-            print(value)
-        quit()
+            for i in range(value):
+                print(value)
+        elif isinstance(value, str):
+            for char in value:
+                print(char)
             
 def exec():
     if tokens[0] == 'print':
