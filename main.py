@@ -108,15 +108,25 @@ def stackDel(var, index):
     if var in stacksVarValues and 0 <= index < len(stacksVarValues[var]):
         del stacksVarValues[var][index]
 
-
 stackOperations = {
     'append': stackAppend,
     'pop': stackPop,
     'del': stackDel
 }
 
+def forEval(tokens):
+    var = tokens[0]
+    if var in varValues:
+        value = varValues[var]
+        if isinstance(value, float) and value.is_integer():
+            value = int(value)
+        for i in range(value):
+            print(value)
+        quit()
+            
 def exec():
     if tokens[0] == 'print':
+        print(tokens)
         printEval(tokens)
     elif tokens[0] == 'math':
         tokensCpy = tokens[1:]
@@ -131,7 +141,13 @@ def exec():
             stackOperations[tokens[1]](tokens[2], int(tokens[3]) if len(tokens) > 3 else None)
         else:       
             stacksVarEval(tokens[1:])
+    elif tokens[0] == 'for':
+        print(tokens)
+        forEval(tokens[1:])
+    elif tokens[0] == 'end':
+        quit()
 
+        
 with open(sys.argv[1], 'r') as file:
     for line in file:
         tokens = [token.strip() for token in line.strip('\n').split() if token.strip() != '']

@@ -1,0 +1,4 @@
+var x = 5
+for x
+    print x
+end
