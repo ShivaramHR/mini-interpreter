@@ -150,23 +150,32 @@ while index < len(lines):
 
     if tokens[0] == "for":
         if 'in' in tokens:
-            var = tokens[-1]
-            if var not in stacksVarValues:
-                print(f"Variable {var} not found")
-                break
-            value = stacksVarValues[var]
+            loopVar = tokens[1]
+            stackVar = tokens[3]
+
+            if stackVar not in stacksVarValues:
+                print(f"Variable {stackVar} not found")
+                sys.exit()
+
+            stackValues = stacksVarValues[stackVar]
+
             for j in range(index+1, len(lines)):
-                if lines[j].strip() == 'end':
+                if lines[j].strip() == "end":
                     endIndex = j
                     break
-            block = []
-            for line in lines[index+1:endIndex]:
-                block.append(line.strip())
-            for _ in range(len(value)):
+
+            block = [line.strip() for line in lines[index+1:endIndex]]
+
+            for item in stackValues:
                 for blockLine in block:
-                    blockLine = blockLine.split()
-                    blockLine[1] = value[_]
-                    exec(blockLine)
+                    blockTokens = blockLine.split()
+
+                    for i, tok in enumerate(blockTokens):
+                        if tok == loopVar:
+                            blockTokens[i] = item
+
+                    exec(blockTokens)
+
             index = endIndex
             continue
             
@@ -191,5 +200,3 @@ while index < len(lines):
         exec(tokens)
 
     index += 1
-
-        
