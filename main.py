@@ -23,24 +23,24 @@ stacksVarValues = {}
 
 # This is for printing the output of the program. It checks if the first token is 'print' and then prints the second token. If there are more than 2 tokens, it joins them together and prints the resulting string.
 def printEval(tokens):
-    if tokens[0] == 'print':
-        tokens = tokens[1:]
-        if len(tokens) == 1 and tokens[1] not in varValues and tokens[1] not in stacksVarValues:
-            tokens[0] = tokens[0].strip().strip('""')  # Remove any leading/trailing whitespace
-            print(tokens[1])
-        elif tokens[1] in varValues :
-            if isinstance(varValues[tokens[1]], float) and varValues[tokens[1]].is_integer():
-                print(int(varValues[tokens[1]]))
-            else:
-                print(varValues[tokens[1]])
-            return
-        elif tokens[1] in stacksVarValues:
-            print(stacksVarValues[tokens[1]])
-            return
+    if tokens[0] != 'print':
+        return
+
+    args = tokens[1:]
+
+    if len(args) == 1 and args[0] not in varValues and args[0] not in stacksVarValues:
+        print(args[0].strip('"'))
+    elif len(args) == 1 and args[0] in varValues:
+        val = varValues[args[0]]
+        if isinstance(val, float) and val.is_integer():
+            print(int(val))
         else:
-            sentance = " ".join(tokens) # joins the remaining tokens into a single string 
-            clean = sentance.replace('"', '').replace('(', '').replace(')', '') # removes any parentheses and quotes from the string
-            print(clean)
+            print(val)
+    elif len(args) == 1 and args[0] in stacksVarValues:
+        print(stacksVarValues[args[0]])
+    else:
+        sentence = " ".join(args)
+        print(sentence.replace('"','').replace('(','').replace(')',''))
 
 
 
@@ -117,10 +117,14 @@ stackOperations = {
     'pop': stackPop,
     'del': stackDel
 }
+
+def getValue(token):
+    if token in varValues:
+        return varValues[token]
+    return token
             
 def exec(tokens):
     if tokens[0] == 'print':
-        print(1)
         printEval(tokens)
     elif tokens[0] == 'math':
         tokensCpy = tokens[1:]
@@ -164,7 +168,9 @@ while index < len(lines):
                 if lines[j].strip() == "end":
                     endIndex = j
                     break
-
+            if endIndex is None:
+                print("Error: for loop not closed")
+                sys.exit()
             block = [line.strip() for line in lines[index+1:endIndex]]
 
             for item in stackValues:
@@ -190,6 +196,9 @@ while index < len(lines):
             if lines[i].strip() == 'end':
                 endIndex = i
                 break
+        if endIndex is None:
+            print("Error: for loop not closed")
+            sys.exit()
         block = [line.strip() for line in lines[index+1:endIndex]]
         for _ in range(value):
             for blockLine in block:
@@ -197,33 +206,25 @@ while index < len(lines):
         
         index = endIndex 
 
-    if tokens[0] == 'if':
-        num1 = tokens[1]
-        num2 = tokens[2]
+    elif tokens[0] == 'if':
+        num1 = float(tokens[1])
+        num2 = float(tokens[2])
         ops = tokens[3]
         if ops in compareOperations:
-            result = compareOperations['gt'](num1, num2)
+            result = compareOperations[ops](num1, num2)
             for i in range(index+1, len(lines)):
                 if lines[i].strip() == 'end':
                     endIndex = i
                     break
+            if endIndex is None:
+                print("Error: if statement not closed")
+                sys.exit()
             block = [line.strip() for line in lines[index+1:endIndex]]
-            for blockLine in block:
-                blockLine = blockLine.split()
-            blockTokens = []
-            for item in blockLine:
-                for char in item:
-                    item = item.strip('"')
-                    blockTokens.append(item)
-            uniqueBlockTokens = []
-            for token in blockTokens:
-                if token not in uniqueBlockTokens:
-                    uniqueBlockTokens.append(token)
-            if not result:
-                index = endIndex
-                continue
-            exec(uniqueBlockTokens)
-                
+            if result:
+                for blockLine in block:
+                    exec(blockLine.split())
+            index = endIndex
+            continue
 
     else:
         exec(tokens)

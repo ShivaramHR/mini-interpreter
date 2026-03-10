@@ -1,4 +1,5 @@
-if 4 5 gt
-    print 6 is greater than 5
+if 6 5 gt
+    print Hello
+    print world
 end
 print Hello world
