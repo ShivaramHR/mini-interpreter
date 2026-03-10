@@ -99,9 +99,9 @@ def stacksVarEval(tokens):
 
 def stackAppend(var, value):
     if var in stacksVarValues:
-        stacksVarValues[var].append(value)
+        stacksVarValues[var].append(str(value))
     else:
-        stacksVarValues[var] = [value]
+        stacksVarValues[var] = [str(value)]
 
 def stackPop(var, value = None):
     if var in stacksVarValues and stacksVarValues[var]:
@@ -149,6 +149,28 @@ while index < len(lines):
         continue
 
     if tokens[0] == "for":
+        if 'in' in tokens:
+            var = tokens[-1]
+            if var not in stacksVarValues:
+                print(f"Variable {var} not found")
+                break
+            value = stacksVarValues[var]
+            for j in range(index+1, len(lines)):
+                if lines[j].strip() == 'end':
+                    endIndex = j
+                    break
+            block = []
+            for line in lines[index+1:endIndex]:
+                block.append(line.strip())
+            for _ in range(len(value)):
+                for blockLine in block:
+                    blockLine = blockLine.split()
+                    blockLine[1] = value[_]
+                    exec(blockLine)
+            index = endIndex
+            continue
+            
+
         var = tokens[1]
         if var not in varValues:
             print(f"Variable {var} not found")
@@ -163,7 +185,7 @@ while index < len(lines):
             for blockLine in block:
                 exec(blockLine.strip().split())
         
-        index = endIndex
+        index = endIndex 
 
     else:
         exec(tokens)

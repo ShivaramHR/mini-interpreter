@@ -1,0 +1,6 @@
+stack x [1,2,3]
+for i in x
+    print i
+end
+stack append x 4
+print x
