@@ -1,237 +1,134 @@
-# Custom Interpreter
+# Mini Interpreter
 
-A small stack-based programming language interpreter written in Python.  
-The interpreter reads programs from a file, parses commands, and executes them line by line.
+A line-by-line interpreter for a custom scripting language, written from scratch in Python. Built as part of MIT 6.100L to learn how interpreters work at a low level, without relying on any parsing libraries or external dependencies.
 
-This project demonstrates basic concepts used in interpreter design such as token execution, operator dispatch tables, variable environments, and control flow.
-
----
-
-# Features
-
-## Print Statements
-
-Print values or strings.
-
-Example:
-
-```
-print "Hello World"
-```
+The language uses **postfix (Reverse Polish Notation)** for expressions and supports variables, stacks, arithmetic, comparisons, and control flow.
 
 ---
 
-## Variables
+## Design Highlights
 
-Variables store values that can be reused later.
+- **Operator dispatch tables** — arithmetic and comparison operations are resolved through dictionaries mapping keyword strings to Python callables, avoiding long chains of conditionals
+- **Dual variable environments** — scalar values and stack structures are tracked in separate dictionaries, allowing independent lookup and mutation
+- **Block-based control flow** — for loops and conditionals extract their body as a sub-list of lines and execute them as a nested program, enabling clean separation between parsing and execution
+- **Postfix evaluation** — expressions like `4 5 add` are evaluated left-to-right with the operator as the final token, keeping the parser simple and uniform
 
-### Syntax
+---
+
+## Language Reference
+
+### Print
 
 ```
-var x = 5
-```
-
-Example:
-
-```
-var x = 5
+print "Hello, World"
 print x
 ```
 
-### Variables With Math Operations
-
-Variables can store results of math expressions.
-
-```
-var x = 4 5 add
-```
-
-This assigns:
-
-```
-x = 9
-```
-
-Variables can also be used inside other expressions.
-
-```
-var x = 4 5 add
-var y = x 10 add
-```
-
-Result:
-
-```
-y = 14
-```
+Prints a string literal or a variable's current value.
 
 ---
 
-## Arithmetic Operations
-
-Basic arithmetic operations are supported.
-
-### Syntax
+### Variables
 
 ```
-math number1 number2 operation
+var x = 5
+var name = "Alice"
 ```
 
-Example:
+Variables hold numbers or strings. Numbers are stored as floats internally and displayed as integers when the result is whole.
+
+#### Variables with expressions
+
+```
+var x = 4 5 add
+var y = x 10 sub
+```
+
+Expressions use postfix notation: operands come first, operator last. Variable names are resolved at evaluation time.
+
+---
+
+### Arithmetic
 
 ```
 math 5 7 add
-```
-
-Supported operations:
-
-- add
-- sub
-- mul
-- div
-- mod
-- pow
-
----
-
-## Multi-Number Math Operations
-
-Operations can be applied to multiple numbers.
-
-Example:
-
-```
 math 1 2 3 4 add
 ```
 
-Result:
+Operations are applied left-to-right across all operands, supporting chains of more than two numbers.
 
-```
-10
-```
+| Operation      | Keyword |
+|----------------|---------|
+| Addition       | add     |
+| Subtraction    | sub     |
+| Multiplication | mul     |
+| Division       | div     |
+| Modulo         | mod     |
+| Exponentiation | pow     |
 
 ---
 
-## Comparison Operations
-
-Comparison operators return boolean values.
-
-Example:
+### Comparisons
 
 ```
 math 5 7 gt
 ```
 
-Result:
+Returns `True` or `False`.
 
-```
-False
-```
-
-Supported comparison operators:
-
-- gt
-- lt
-- eq
-- gte
-- lte
-- neq
+| Comparison            | Keyword |
+|-----------------------|---------|
+| Greater than          | gt      |
+| Less than             | lt      |
+| Equal                 | eq      |
+| Greater than or equal | gte     |
+| Less than or equal    | lte     |
+| Not equal             | neq     |
 
 ---
 
-## Stacks
-
-Stacks allow storing and manipulating lists of values.
-
-### Create Stack
+### Stacks
 
 ```
 stack nums [1,2,3]
-```
-
-### Stack Operations
-
-Append value:
-
-```
 stack append nums 4
-```
-
-Pop value:
-
-```
 stack pop nums
-```
-
-Delete element by index:
-
-```
 stack del nums 1
 ```
 
----
-
-## Loop Over Stack
-
-You can iterate through stack values.
-
-Example:
-
-```
-stack nums [1,2,3]
-
-for x in nums
-    print x
-end
-```
-
-Output:
-
-```
-1
-2
-3
-```
+Stacks are ordered lists of values. Operations: append, pop (removes last), del (removes by index).
 
 ---
 
-## For Loops
-
-Loops can execute code multiple times.
-
-Example:
+### For Loop (count-based)
 
 ```
-var x = 3
+var n = 3
 
-for x
-    print "loop"
+for n
+    print "hello"
 end
 ```
 
-Output:
-
-```
-loop
-loop
-loop
-```
+Executes the enclosed block `n` times.
 
 ---
 
-## If Statements
-
-Conditional execution is supported.
-
-### Syntax
+### For Loop (stack iteration)
 
 ```
-if number1 number2 operator
-    print "something"
+stack fruits [apple,banana,cherry]
+
+for item in fruits
+    print item
 end
 ```
 
-Example:
+Iterates over each element in a stack, binding the current element to the loop variable per iteration.
+
+---
+
+### If Statement
 
 ```
 if 6 7 lt
@@ -239,54 +136,80 @@ if 6 7 lt
 end
 ```
 
+Evaluates the comparison and executes the block only if it holds.
+
 ---
 
-# Example Program
+## Example Program
 
 ```
 var x = 10
-var y = 5
+var y = 3
 
-math x y add
-print "done"
+var sum = x y add
+var remainder = x y mod
+
+print sum
+print remainder
+```
+
+Output:
+
+```
+13
+1
 ```
 
 ---
 
-# Running the Interpreter
+## Getting Started
 
-Run a program using:
+### Requirements
+
+Python 3.x. No external dependencies.
+
+### Run
+
+```bash
+python main.py examples/program.my
+```
+
+### Included Examples
+
+| File              | What it shows                        |
+|-------------------|--------------------------------------|
+| program.my        | Variables and arithmetic             |
+| for.my            | Count-based loop                     |
+| for_on_stacks.my  | Iterating over a stack               |
+| stack.my          | Stack creation and operations        |
+| if.my             | Conditional execution                |
+
+---
+
+## Project Structure
 
 ```
-python main.py program_name
-```
-
-Example:
-
-```
-python main.py program.my
+.
+├── main.py            # Tokenizer, dispatcher, and execution loop
+├── README.md
+├── LICENSE
+└── examples/
+    ├── program.my
+    ├── for.my
+    ├── for_on_stacks.my
+    ├── stack.my
+    └── if.my
 ```
 
 ---
 
-# Future Improvements
+## Concepts Implemented
 
-Planned features include:
+Built without any parsing libraries to understand how interpreters work under the hood.
 
-- while loops
-- else blocks
-- nested control structures
-- REPL mode
-- better error handling
-
----
-
-# Purpose
-
-This project was built to learn:
-
-- interpreter design
-- command parsing
-- control flow execution
-- operator dispatch tables
-- simple language runtime implementation
+- Line-by-line tokenization and execution
+- Dispatch tables for operation resolution
+- Dual variable environments for scalars and lists
+- Block extraction and re-execution for loops and conditionals
+- Postfix expression evaluation with multi-operand chaining
+- Stack as a first-class data structure with named operations
