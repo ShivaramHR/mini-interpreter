@@ -8,10 +8,10 @@ The language uses **postfix (Reverse Polish Notation)** for expressions and supp
 
 ## Design Highlights
 
-- **Operator dispatch tables** — arithmetic and comparison operations are resolved through dictionaries mapping keyword strings to Python callables, avoiding long chains of conditionals
-- **Dual variable environments** — scalar values and stack structures are tracked in separate dictionaries, allowing independent lookup and mutation
-- **Block-based control flow** — for loops and conditionals extract their body as a sub-list of lines and execute them as a nested program, enabling clean separation between parsing and execution
-- **Postfix evaluation** — expressions like `4 5 add` are evaluated left-to-right with the operator as the final token, keeping the parser simple and uniform
+- **Operator dispatch tables**: arithmetic and comparison operations are resolved through dictionaries mapping keyword strings to Python callables, avoiding long chains of conditionals
+- **Dual variable environments**: scalar values and stack structures are tracked in separate dictionaries, allowing independent lookup and mutation
+- **Block-based control flow**: for loops and conditionals extract their body as a sub-list of lines and execute them as a nested program, enabling clean separation between parsing and execution
+- **Postfix evaluation**: expressions like `4 5 add` are evaluated left-to-right with the operator as the final token, keeping the parser simple and uniform
 
 ---
 
